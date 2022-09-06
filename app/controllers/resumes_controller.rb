@@ -48,20 +48,26 @@ class ResumesController < ApplicationController
     i = 0;
 
     CSV.foreach(("public#{@report_entity.attachment}"), headers: true, col_sep: ",") do |row_report|
+      finded = false;
       CSV.foreach(("public#{@logs_entity.attachment}"), headers: true, col_sep: ",") do |row_logs|
-          if row_logs[1].include? row_report[3];
-            CSV.foreach(("public#{@logs_entity.attachment}"), headers: true, col_sep: ",") do |row_logs_second|
-              if ((row_logs_second[1].include? row_logs[1][8, 36]) && (row_logs_second[1].include? "pending"))
-                token_index = row_logs_second[1].index("token")
-                puts "token index is #{token_index}}"
-                results[i] = {transporter_key: row_report[3], log: row_logs[1], token: row_logs_second[1][token_index+8, 11]};
-                i += 1;
-              end
+        if row_logs[1].include? row_report[3];
+          CSV.foreach(("public#{@logs_entity.attachment}"), headers: true, col_sep: ",") do |row_logs_second|
+            if ((row_logs_second[1].include? row_logs[1][8, 36]) && (row_logs_second[1].include? "pending"))
+              token_index = row_logs_second[1].index("token")
+              results[i] = {transporter_key: row_report[3], log: row_logs[1], token: row_logs_second[1][token_index+8, 11]};
+              finded = true;
+              i += 1;
             end
-            puts "¡Registro del transporter_key #{row_report[3]} encontrado!";
-            #puts row_logs[1][45, 45], row_logs[1][162...];
           end
+        end
       end 
+      if finded == false
+        results[i] = {
+          transporter_key: row_report[3], 
+          log: "No se encontraron registros (posible doble reservación)", 
+          token: "No se encontraron registros (posible doble reservación)"};
+        i += 1;
+      end
     end 
     csv_generation(results, report_resume);
   end
