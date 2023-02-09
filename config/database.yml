@@ -24,8 +24,25 @@ default: &default
   password: postgres
 
 development:
-  <<: *default
-  database: management_app_development
+  primary:
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    username: postgres
+    password: postgres
+    host: localhost
+    database: management_app_development
+  etn:
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    username: uefbh4d2n48lsq
+    password: p2458e1e3a1ec0badc3f0ba63c56efe9caa09f6c6f7d5a249e2b8d75541d96588
+    host: ec2-3-224-63-134.compute-1.amazonaws.com
+    database: daeb7odqmtgmj6
+    sslmode: require
+    database_tasks: false
+    port: 5432
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
